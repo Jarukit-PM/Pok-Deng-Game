@@ -1,16 +1,10 @@
 import { ERR_INVALID_AMOUNT, ERR_INVALID_STATE } from "../errors/app-error";
+import { Card } from "../types/game.types";
 
 const SUITS = ['Spades', 'Hearts', 'Diamonds', 'Clubs'] as const;
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'] as const;
 
-export type Suit = typeof SUITS[number];
-export type Rank = typeof RANKS[number];
-
-export interface Card {
-    suit: Suit;
-    rank: Rank;
-    value: number;
-}
+export type Rank = (typeof RANKS)[number];
 
 export function createDeck(): Card[] {
     return SUITS.flatMap(suit => RANKS.map(rank => ({ suit, rank, value: getCardValue(rank) })));
@@ -18,8 +12,8 @@ export function createDeck(): Card[] {
 
 export function getCardValue(rank: Rank): number {
     if (rank === 'A') return 1;
-    if (rank === 'J' || rank === 'Q' || rank === 'K') return 0;
-    return parseInt(rank);
+    if (rank === '10' || rank === 'J' || rank === 'Q' || rank === 'K') return 0;
+    return parseInt(rank, 10);
 }
 
 export function shuffleDeck(deck: Card[]): Card[] {
@@ -31,7 +25,7 @@ export function shuffleDeck(deck: Card[]): Card[] {
 }
 
 export function cutDeck(deck: Card[], amount: number): Card[] {
-    if (amount < 0 || amount > deck.length) {
+    if (!Number.isInteger(amount) || amount < 1 || amount >= deck.length) {
         throw ERR_INVALID_AMOUNT;
     }
     return deck.slice(amount).concat(deck.slice(0, amount));

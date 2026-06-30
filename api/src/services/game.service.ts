@@ -3,6 +3,7 @@ import { ERR_INVALID_AMOUNT, ERR_SESSION_NOT_FOUND } from '../errors/app-error';
 import { saveSession, getSession} from '../store/game.store';
 import type { ActionRequest, GameSession } from '../types/game.types';
 import { shuffleDeck, createDeck } from '../game/deck';
+import { handleBet, handleCut, handleDraw, handleNextRound, handleStay } from '../game/state-machine';
 
 export function startGame(initialBalance: number): GameSession {
     if (!Number.isInteger(initialBalance) || initialBalance <= 0) {
@@ -34,19 +35,19 @@ export function handleAction(gameId: string, body: ActionRequest){
 
     switch (body.action) {
         case 'cut':
-            // TODO: Implement cut logic
+            handleCut(session, body.amount!);
             break;
         case 'bet':
-            // TODO: Implement bet logic
+            handleBet(session, body.amount!);
             break;
         case 'draw':
-            // TODO: Implement draw logic
+            handleDraw(session);
             break;
         case 'stay':
-            // TODO: Implement stay logic
+            handleStay(session);
             break;
         case 'next_round':
-            // TODO: Implement next round logic
+            handleNextRound(session);
             break;
     }
     saveSession(session);
