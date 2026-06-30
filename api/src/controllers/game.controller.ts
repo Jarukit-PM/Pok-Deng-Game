@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-import { AppError } from '../errors/app-error';
-import { startGame } from '../services/game.service';
-import type { StartGameRequest } from '../types/game.types';
+import { AppError, ERR_SESSION_NOT_FOUND } from '../errors/app-error';
+import { handleAction, startGame } from '../services/game.service';
+import type { ActionRequest, StartGameRequest } from '../types/game.types';
 import { toGameResponse } from '../utils/response.mapper';
 
 export function startGameController(req: Request, res: Response, next: NextFunction) {
@@ -33,4 +33,18 @@ export function errorHandler(
     error: 'ERR_INTERNAL',
     message: 'Internal server error',
   });
+}
+
+export function actionController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const gameId = req.params.game_id;
+    if (typeof gameId !== 'string') {
+      throw ERR_SESSION_NOT_FOUND;
+    }
+    const body = req.body as ActionRequest;
+    const session = handleAction(gameId, body);
+    res.json(toGameResponse(session));
+  } catch (error) {
+    next(error);
+  }
 }

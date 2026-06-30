@@ -35,3 +35,10 @@ export interface GameResponse {
 export interface StartGameRequest {
     initial_balance: number;
 }
+
+export type GameAction = 'cut' | 'bet' | 'draw' | 'stay' | 'next_round';
+
+export interface ActionRequest {
+    action: GameAction;
+    amount?: number;
+}
